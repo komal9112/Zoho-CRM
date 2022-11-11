@@ -1,0 +1,46 @@
+Docs = zoho.crm.getRelatedRecords("Attachments","Email_Parser",id);
+Email_Parser_data = zoho.crm.getRecordById("Email_Parser",id);
+Email_Parser_Email = Email_Parser_data.get("Email");
+Attached_docs = list();
+Deal_info = zoho.crm.getRecords("Deals");
+for each  Deal in Deal_info
+{
+	Deal_Email = Deal.get("Email");
+	Deal_id = Deal.get("id");
+	if(Deal_Email == Email_Parser_Email)
+	{
+		Pass_Deal_Email = Deal_Email;
+		Pass_Deal_Id = Deal_id;
+	}
+	else
+	{
+		info "No Deal Present";
+	}
+}
+attachments_in_Deal = zoho.crm.getRelatedRecords("Attachments","Deals",Pass_Deal_Id);
+info attachments_in_Deal;
+Deal_Attachments_List = list();
+for each  attachment in attachments_in_Deal
+{
+	attachment_File_Name = attachment.get("File_Name");
+	Deal_Attachments_List.add(attachment_File_Name);
+}
+for each  doc in Docs
+{
+	Attachment_id = doc.get("id");
+	file_response = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v2/Email_Parser/" + id + "/Attachments/" + Attachment_id
+		type :GET
+		connection:"attachment"
+	];
+	if(Deal_Attachments_List.contains(file_response))
+	{
+		info "Attachment Already Present in the Deal";
+	}
+	else
+	{
+		res = zoho.crm.attachFile("Deals",Pass_Deal_Id,file_response);
+	}
+}
+
