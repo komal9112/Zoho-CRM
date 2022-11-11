@@ -1,0 +1,13 @@
+// ID = 4218057000001922069;
+lead_data = zoho.crm.getRecordById("Leads",ID);
+// info lead_data;
+Company = lead_data.get("Company");
+Lead_Stages = lead_data.get("Lead_Stages");
+Date1 = zoho.currentdate.addDay(20);
+deal_map = Map();
+deal_map.put("Deal_Name",Company);
+deal_map.put("Account_Name",Company);
+deal_map.put("Stage",Lead_Stages);
+deal_map.put("Closing_Date",Date1);
+info deal_map;
+convert_lead = zoho.crm.convertLead(ID,{"Deals":deal_map});
